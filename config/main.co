@@ -8,7 +8,7 @@ define bot express cannot respond
 
 define flow
   user ask health
-  $answer = execute rag()
+  $answer = execute rag_action()
   $check_facts = True
   bot $answer
 

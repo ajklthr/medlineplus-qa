@@ -10,3 +10,6 @@ presidio-analyzer # For Sensitive data masking
 presidio-anonymizer 
 spacy
 nemoguardrails
+promptflow-tracing
+opentelemetry-exporter-otlp-proto-http==1.26.0
+opentelemetry-instrumentation-langchain

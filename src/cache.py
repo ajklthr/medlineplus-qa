@@ -13,8 +13,9 @@ class CachedRag(Rag):
 
     def ask(self, question):
         if response := self.llmcache.check(prompt=question.question):
-            return json.loads(response[0]["response"]) #TODO Multiple responses may be returned
+            # TODO Multiple responses may be returned
+            return json.loads(response[0]["response"])
         else:
-            response = super().ask(question.question)
-            self.llmcache.store(prompt=question.question, response=json.dumps(response))
-            return response
+            response = json.dumps(super().ask(question.question))
+            self.llmcache.store(prompt=question.question, response=response)
+            return json.loads(response)

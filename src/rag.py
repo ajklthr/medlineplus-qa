@@ -6,8 +6,10 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableParallel
 from pydantic import BaseModel
 
+
 class Question(BaseModel):
     question: str
+
 
 class Rag():
     def __init__(self, embedding_model, vector_store, llm):

@@ -13,6 +13,12 @@ from nemoguardrails import RailsConfig
 from nemoguardrails.actions.actions import ActionResult
 from nemoguardrails.kb.kb import KnowledgeBase
 from langchain.llms.base import BaseLLM
+from promptflow.tracing import start_trace
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.instrumentation.langchain import LangchainInstrumentor
+from promptflow.tracing import start_trace
 
 app = FastAPI()
 
@@ -37,20 +43,29 @@ rag = CachedRag(embedding_model, vector_store, llm)
 config = RailsConfig.from_path("./config")
 rails = LLMRails(config)
 
+# instrument OpenAI
+start_trace()
+tracer_provider = trace.get_tracer_provider()
+otlp_span_exporter = OTLPSpanExporter()
+tracer_provider.add_span_processor(BatchSpanProcessor(otlp_span_exporter))
 
-async def rag(context: dict, llm: BaseLLM, kb: KnowledgeBase) -> ActionResult:
+instrumentor = LangchainInstrumentor()
+if not instrumentor.is_instrumented_by_opentelemetry:
+    instrumentor.instrument()
+
+
+async def rag_action(context: dict, llm: BaseLLM, kb: KnowledgeBase) -> ActionResult:
     user_message = context.get("last_user_message")
     context_updates = {}
 
-    response = await rag.ask(Question(user_message))['answer']
+    response = rag.ask(Question(question=user_message))
     # 💡 Store the chunks for fact-checking
-    context_updates["relevant_chunks"] = "\n".join(
-        [doc.page_content for doc in response['context']])
+    context_updates["relevant_chunks"] = response['context']
     answer = response['answer']
 
     return ActionResult(return_value=answer, context_updates=context_updates)
 
-rails.register_action(rag, "rag_action")
+rails.register_action(rag_action, "rag_action")
 
 
 @app.post("/question/")
