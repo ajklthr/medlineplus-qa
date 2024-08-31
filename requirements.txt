@@ -1,0 +1,8 @@
+fastapi[standard]==0.112.1
+pydantic==2.8.0
+torch
+flashrank
+langchain-openai
+langchain-community
+faiss-cpu
+redisvl
