@@ -6,7 +6,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI
 import torch
 import os
-from rag import  Question
+from rag import Question
 from cache import CachedRag
 from nemoguardrails import LLMRails
 from nemoguardrails import RailsConfig
@@ -38,6 +38,25 @@ config = RailsConfig.from_path("./config")
 rails = LLMRails(config)
 
 
+async def rag(context: dict, llm: BaseLLM, kb: KnowledgeBase) -> ActionResult:
+    user_message = context.get("last_user_message")
+    context_updates = {}
+
+    response = await rag.ask(Question(user_message))['answer']
+    # 💡 Store the chunks for fact-checking
+    context_updates["relevant_chunks"] = "\n".join(
+        [doc.page_content for doc in response['context']])
+    answer = response['answer']
+
+    return ActionResult(return_value=answer, context_updates=context_updates)
+
+rails.register_action(rag, "rag_action")
+
+
 @app.post("/question/")
 async def root(question: Question):
-     return rag.ask(question)['answer']
+    response = await rails.generate_async(messages=[{
+        "role": "user",
+        "content": question.question
+    }])
+    return response['content']
