@@ -8,6 +8,8 @@ import torch
 import os
 from rag import Rag
 from pydantic import BaseModel
+from redisvl.extensions.llmcache import SemanticCache
+import json
 
 app = FastAPI()
 
@@ -26,6 +28,12 @@ llm= ChatOpenAI(model="gpt-4o-mini")
 
 rag= Rag(embedding_model,vector_store,llm)
 
+llmcache = SemanticCache(
+    name="llmcache",                     # underlying search index name
+    redis_url="redis://localhost:6379",  # redis connection url string
+    distance_threshold=0.1               # semantic cache distance threshold
+)
+
 class Question(BaseModel):
     question: str
 
@@ -35,4 +43,9 @@ async def root():
 
 @app.post("/question/")
 async def root(question:Question):
-     return rag.ask(question.question)
+    if response := llmcache.check(prompt=question.question):
+        return json.loads(response[0]["response"])
+    else:
+        response = json.dumps(rag.ask(question.question))
+        llmcache.store(prompt=question.question, response=response)
+        return response
