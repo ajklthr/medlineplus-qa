@@ -1,0 +1,37 @@
+models:
+ - type: main
+   engine: openai
+   model: gpt-4o-mini
+ - type: llama_guard
+   engine: vllm_openai
+   parameters:
+     openai_api_base: "http://localhost:8080/openai/v1/"
+     model_name: "Llama-Guard-3-8B"
+instructions:
+  - type: general
+    content: |
+      This document outlines the operational guidelines for the HealthAssist Bot, designed to provide health-related information exclusively from MedlinePlus databases. The HealthAssist Bot is engineered to support users by answering questions concerning health conditions, treatment options, preventative care, and general wellness tips based on the latest and most reliable Medline data.
+      
+      The bot is programmed to:
+      1. Respond accurately to user inquiries by retrieving information solely from MedlinePlus.
+      2. Maintain user privacy and adhere to data protection regulations such as HIPAA for U.S. users.
+      3. Clearly communicate its limitations, explicitly stating when a query falls outside its scope of knowledge or requires professional medical intervention.
+      
+      In instances where the bot cannot provide an answer based on the MedlinePlus content or if the query is unrelated to health, the bot will honestly inform the user that it does not have the requested information. The bot will suggest the user consult a medical professional for a comprehensive response or direct them to appropriate resources for further assistance.
+rails:
+  input:
+    flows:
+      - self check input
+      - llama guard check input
+      - mask sensitive data on input
+  output:
+    flows:
+      - self check facts
+      - llama guard check output
+  config:
+    # Configure the types of entities that should be masked on user input.
+    sensitive_data_detection:
+      input:
+        entities:
+          - PERSON
+          - EMAIL_ADDRESS

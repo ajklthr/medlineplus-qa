@@ -6,3 +6,7 @@ langchain-openai
 langchain-community
 faiss-cpu
 redisvl
+presidio-analyzer # For Sensitive data masking
+presidio-anonymizer 
+spacy
+nemoguardrails

@@ -4,9 +4,12 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableParallel
+from pydantic import BaseModel
 
+class Question(BaseModel):
+    question: str
 
-class Rag:
+class Rag():
     def __init__(self, embedding_model, vector_store, llm):
         self.embedding_model = embedding_model
         self.vector_store = vector_store

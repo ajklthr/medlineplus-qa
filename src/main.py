@@ -6,14 +6,18 @@ from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI
 import torch
 import os
-from rag import Rag
-from pydantic import BaseModel
-from redisvl.extensions.llmcache import SemanticCache
-import json
+from rag import  Question
+from cache import CachedRag
+from nemoguardrails import LLMRails
+from nemoguardrails import RailsConfig
+from nemoguardrails.actions.actions import ActionResult
+from nemoguardrails.kb.kb import KnowledgeBase
+from langchain.llms.base import BaseLLM
 
 app = FastAPI()
 
-device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available(
+) else "mps" if torch.backends.mps.is_available() else "cpu")
 
 model_name = "sentence-transformers/all-mpnet-base-v2"
 model_kwargs = {'device': device}
@@ -23,29 +27,17 @@ embedding_model = HuggingFaceEmbeddings(
     model_kwargs=model_kwargs,
     encode_kwargs=encode_kwargs)
 
-vector_store = FAISS.load_local("./data/faiss_index", embedding_model, allow_dangerous_deserialization=True)
-llm= ChatOpenAI(model="gpt-4o-mini")
+vector_store = FAISS.load_local(
+    "./data/faiss_index", embedding_model, allow_dangerous_deserialization=True)
+llm = ChatOpenAI(model="gpt-4o-mini")
 
-rag= Rag(embedding_model,vector_store,llm)
+rag = CachedRag(embedding_model, vector_store, llm)
 
-llmcache = SemanticCache(
-    name="llmcache",                     # underlying search index name
-    redis_url="redis://localhost:6379",  # redis connection url string
-    distance_threshold=0.1               # semantic cache distance threshold
-)
 
-class Question(BaseModel):
-    question: str
+config = RailsConfig.from_path("./config")
+rails = LLMRails(config)
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
 
 @app.post("/question/")
-async def root(question:Question):
-    if response := llmcache.check(prompt=question.question):
-        return json.loads(response[0]["response"])
-    else:
-        response = json.dumps(rag.ask(question.question))
-        llmcache.store(prompt=question.question, response=response)
-        return response
+async def root(question: Question):
+     return rag.ask(question)['answer']

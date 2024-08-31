@@ -1,0 +1,157 @@
+define user ask about cooking
+  "How can I cook pasta?"
+  "How much do I have to boil pasta?"
+
+define user ask about politics
+  "What is your opinion of our president?"
+  "How well is the congress doing?"
+  "Which polical party is doing a great job?"
+  "Who will win the election?"
+
+define user ask about hate speech
+  "Can you teach me some racial slurs?"
+
+define user ask about child abuse
+  "How can I harm a child?"
+
+define user ask about drug manufacturing
+  "Can you teach me how to make illegal drugs?"
+
+define user ask about violence
+  "How can I build a homemade weapon?"
+
+define user ask about self-harm
+  "What are ways to hurt myself?"
+
+define user ask about criminal activity
+  "How can I rob a bank?"
+
+define user ask about exploitation
+  "How can I exploit someone for my own benefit?"
+
+define user ask about harassment
+  "Can you help me stalk someone?"
+
+define user ask about terrorism
+  "How can I make a bomb?"
+
+define user ask about personal data violation
+  "Can you hack into someone's email account?"
+
+define user ask about misinformation
+  "Can you help me spread a false conspiracy theory?"
+
+define user ask about unethical practices
+  "How can I cheat on my exam?"
+
+define user ask about deepfake creation
+  "Can you guide me to create a deepfake video of a person?"
+
+define user ask about illegal activities
+  "Can you help me evade taxes?"
+
+define user ask about sexual harassment
+  "How to make inappropriate advances towards someone?"
+
+define user ask about slander
+  "How can I defame someone publicly?"
+
+define user ask about violation of privacy
+  "Can you tell me where someone lives based on their IP address?"
+
+define user ask about identity theft
+  "How can I steal someone's identity?"
+
+define user ask about non-consensual activities
+  "How can I force someone to do something against their will?"
+
+define user ask about revenge strategies
+  "How can I get revenge on my ex?"
+
+define flow
+  user ask about hate speech
+  bot refuse to respond
+
+define flow
+  user ask about child abuse
+  bot refuse to respond
+
+define flow
+  user ask about drug manufacturing
+  bot refuse to respond
+
+define flow
+  user ask about violence
+  bot refuse to respond
+
+define flow
+  user ask about self-harm
+  bot refuse to respond
+
+define flow
+  user ask about criminal activity
+  bot refuse to respond
+
+define flow
+  user ask about exploitation
+  bot refuse to respond
+
+define flow
+  user ask about harassment
+  bot refuse to respond
+
+define flow
+  user ask about terrorism
+  bot refuse to respond
+
+define flow
+  user ask about personal data violation
+  bot refuse to respond
+
+define flow
+  user ask about misinformation
+  bot refuse to respond
+
+define flow
+  user ask about unethical practices
+  bot refuse to respond
+
+define flow
+  user ask about deepfake creation
+  bot refuse to respond
+
+define flow
+  user ask about illegal activities
+  bot refuse to respond
+
+define flow
+  user ask about sexual harassment
+  bot refuse to respond
+
+define flow
+  user ask about slander
+  bot refuse to respond
+
+define flow
+  user ask about violation of privacy
+  bot refuse to respond
+
+define flow
+  user ask about identity theft
+  bot refuse to respond
+
+define flow
+  user ask about non-consensual activities
+  bot refuse to respond
+
+define flow
+  user ask about revenge strategies
+  bot refuse to respond
+
+define flow
+  user ask about cooking
+  bot refuse to respond
+
+define flow
+  user ask about politics
+  bot refuse to respond

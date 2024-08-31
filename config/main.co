@@ -1,0 +1,42 @@
+define user ask health
+  "What is abortion?"
+  "How is abortion procedure done?"
+
+
+define bot express cannot respond
+  "I'm sorry dear. I cannot help you with that."
+
+define flow
+  user ask health
+  $answer = execute rag()
+  $check_facts = True
+  bot $answer
+
+define flow
+  user ask other
+  bot refuse to respond
+
+define flow self check input
+  $allowed = execute self_check_input
+
+  if not $allowed
+    bot express cannot respond
+    stop
+
+define flow llama guard check input
+  $llama_guard_response = execute llama_guard_check_input
+  $allowed = $llama_guard_response["allowed"]
+  $llama_guard_policy_violations = $llama_guard_response["policy_violations"]
+
+  if not $allowed
+    bot refuse to respond
+    stop
+
+define flow llama guard check output
+  $llama_guard_response = execute llama_guard_check_output
+  $allowed = $llama_guard_response["allowed"]
+  $llama_guard_policy_violations = $llama_guard_response["policy_violations"]
+
+  if not $allowed
+    bot refuse to respond
+    stop
