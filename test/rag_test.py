@@ -2,45 +2,45 @@
 import unittest
 import torch
 from langchain_community.embeddings import HuggingFaceEmbeddings
-import faiss
 from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI
 import torch
-import os
-from ragas.metrics import faithfulness, answer_correctness
-from ragas import evaluate
-from datasets import Dataset
-import sys
-from rag import Question, Rag
+from rag import Rag
 import pickle
 
 
 class RagTest(unittest.TestCase):
 
-    def test_abortion_correctness(self):
+    def __init__(self, methodName: str = "runTest") -> None:
+        super().__init__(methodName)
         device = torch.device("cuda" if torch.cuda.is_available(
         ) else "mps" if torch.backends.mps.is_available() else "cpu")
         model_name = "sentence-transformers/all-mpnet-base-v2"
         model_kwargs = {'device': device}
         encode_kwargs = {'normalize_embeddings': False}
-        embedding_model = HuggingFaceEmbeddings(
+        self.embedding_model = HuggingFaceEmbeddings(
             model_name=model_name,
             model_kwargs=model_kwargs,
             encode_kwargs=encode_kwargs)
 
-        vector_store = FAISS.load_local(
-            "./data/faiss_index", embedding_model, allow_dangerous_deserialization=True)
+        self.vector_store = FAISS.load_local(
+            "./data/faiss_index", self.embedding_model, allow_dangerous_deserialization=True)
 
         with open("./data/medline_plus_english_chunked.pkl", "rb") as file:
-            articles = pickle.load(file)
+            self.articles = pickle.load(file)
 
-        llm = ChatOpenAI(model="gpt-4o-mini")
-        rag = Rag(articles, embedding_model, vector_store, llm)
+        self.llm = ChatOpenAI(model="gpt-4o-mini")
+
+
+    def test_abortion_retireval_relevance(self):
+        rag = Rag(self.articles, self.embedding_model, self.vector_store, self.llm)
         # result = rag.ask('What is (are) Abortion ?')
         result = rag.retrieve_context('What is (are) Abortion ?')
-        print(result)
-        result = rag.ask('What is (are) Abortion ?')
-        print(result)
+        top_doc=result[0]
+        self.assertEqual(top_doc.metadata["id"],0)
+        self.assertEqual(top_doc.metadata["ID"],"122")
+        self.assertEqual(top_doc.metadata["Title"],'Abortion')
+        self.assertEqual(top_doc.metadata["URL"],'https://medlineplus.gov/abortion.html')
 
 
 if __name__ == '__main__':
