@@ -19,6 +19,8 @@ from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExport
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.langchain import LangchainInstrumentor
 from promptflow.tracing import start_trace
+import pickle
+ 
 
 app = FastAPI()
 
@@ -35,9 +37,13 @@ embedding_model = HuggingFaceEmbeddings(
 
 vector_store = FAISS.load_local(
     "./data/faiss_index", embedding_model, allow_dangerous_deserialization=True)
+
+with open("medline_plus_english_chunked.pkl", "rb") as file:
+    articles = pickle.load(file)
+
 llm = ChatOpenAI(model="gpt-4o-mini")
 
-rag = CachedRag(embedding_model, vector_store, llm)
+rag = CachedRag(articles,embedding_model, vector_store, llm)
 
 
 config = RailsConfig.from_path("./config")

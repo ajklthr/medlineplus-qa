@@ -4,8 +4,8 @@ from redisvl.extensions.llmcache import SemanticCache
 
 
 class CachedRag(Rag):
-    def __init__(self, embedding_model, vector_store, llm):
-        super().__init__(embedding_model, vector_store, llm)
+    def __init__(self, articles,embedding_model, vector_store, llm):
+        super().__init__(articles,embedding_model, vector_store, llm)
         self.llmcache = SemanticCache(name="llmcache",                     # underlying search index name
                                       redis_url="redis://localhost:6379",  # redis connection url string TODO
                                       distance_threshold=0.1               # semantic cache distance threshold
