@@ -34,7 +34,6 @@ class RagTest(unittest.TestCase):
 
     def test_abortion_retireval_relevance(self):
         rag = Rag(self.articles, self.embedding_model, self.vector_store, self.llm)
-        # result = rag.ask('What is (are) Abortion ?')
         result = rag.retrieve_context('What is (are) Abortion ?')
         top_doc=result[0]
         self.assertEqual(top_doc.metadata["id"],0)
